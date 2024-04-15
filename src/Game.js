@@ -59,7 +59,7 @@ function Game() {
   
   return (
     <div className="flex flex-col justify-center items-center h-screen justify-evenly">
-      <div className='bg-gray-200 p-4 rounded-lg shadow-md'>
+      <div className='p-4 rounded-md shadow-2xl border-2'>
         <Board
           grid={grid}
           rowsClues={rowsClues}

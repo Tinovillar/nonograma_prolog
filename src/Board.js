@@ -6,44 +6,20 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (
-        <div className="vertical">
-            <div
-                className="colClues"
-                style={{
-                    gridTemplateRows: '60px',
-                    gridTemplateColumns: `60px repeat(${numOfCols}, 40px)`
-                    /*
-                       60px  40px 40px 40px 40px 40px 40px 40px   (gridTemplateColumns)
-                      ______ ____ ____ ____ ____ ____ ____ ____
-                     |      |    |    |    |    |    |    |    |  60px
-                     |      |    |    |    |    |    |    |    |  (gridTemplateRows)
-                      ------ ---- ---- ---- ---- ---- ---- ---- 
-                     */
-                }}
-            >
-                <div>{/* top-left corner square */}</div>
+        <div className="flex-column">
+            <div className={`flex justify-around`}>
+                <div className='w-20 h-20 m-1'>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
-                    <Clue clue={clue} key={i} />
+                    <Clue clue={clue} key={i} isColumn={true} />
                 )}
             </div>
-            <div className="horizontal">
-                <div
-                    className="rowClues"
-                    style={{
-                        gridTemplateRows: `repeat(${numOfRows}, 40px)`,
-                        gridTemplateColumns: '60px'
-                        /* IDEM column clues above */
-                    }}
-                >
+            <div className="flex">
+                <div className={`flex flex-col justify-between`}>
                     {rowsClues.map((clue, i) =>
-                        <Clue clue={clue} key={i} />
+                        <Clue clue={clue} key={i} isColumn={false} />
                     )}
                 </div>
-                <div className="board"
-                    style={{
-                        gridTemplateRows: `repeat(${numOfRows}, 40px)`,
-                        gridTemplateColumns: `repeat(${numOfCols}, 40px)`
-                    }}>
+                <div className={`grid grid-cols-${numOfCols} grid-rows-${numOfRows}`}>
                     {grid.map((row, i) =>
                         row.map((cell, j) =>
                             <Square
