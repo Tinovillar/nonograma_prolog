@@ -7,7 +7,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% replace(?X, +XIndex, +Y, +Xs, -XsY)
+% replace(?fila_a_reemplazar, +nro_fila, +fila_nueva, +grilla, -grilla_Nueva)
 %
 % XsY is the result of replacing the occurrence of X in position XIndex of Xs by Y.
 
@@ -22,7 +22,6 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
-
 put(Content, [RowN, ColN], _RowsClues, _ColsClues, Grid, NewGrid, 0, 0):-
 	% NewGrid is the result of replacing the row Row in position RowN of Grid by a new row NewRow (not yet instantiated).
 	replace(Row, RowN, NewRow, Grid, NewGrid),
