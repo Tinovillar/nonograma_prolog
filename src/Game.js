@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PengineClient from './PengineClient';
 import Board from './Board';
+import SwitchBtn from './SwitchBtn';
 
 let pengine;
 
@@ -11,6 +12,7 @@ function Game() {
   const [rowsClues, setRowsClues] = useState(null);
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
+  const [painting, setPainting] = useState(true);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -38,7 +40,7 @@ function Game() {
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = '#'; // Content to put in the clicked square.
+    const content = painting ? '#' : 'X'; // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -56,7 +58,7 @@ function Game() {
   }
   
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen justify-evenly">
       <div className='bg-gray-200 p-4 rounded-lg shadow-md'>
         <Board
           grid={grid}
@@ -64,10 +66,8 @@ function Game() {
           colsClues={colsClues}
           onClick={(i, j) => handleClick(i, j)}
         />
-        <div className="game-info">
-          
-        </div>
       </div>
+      <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
     </div>
   );
 }
