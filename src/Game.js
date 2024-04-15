@@ -39,7 +39,9 @@ function Game() {
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
     const content = '#'; // Content to put in the clicked square.
-    const queryS = `put("${content}", [${i},${j}], [], [],${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    const rowsCluesS = JSON.stringify(rowsClues);
+    const colsCluesS = JSON.stringify(colsClues);
+    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
@@ -52,10 +54,9 @@ function Game() {
   if (!grid) {
     return null;
   }
-
-  const statusText = 'Keep playing!';
+  
   return (
-    <div className="game flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen">
       <div className='bg-gray-200 p-4 rounded-lg shadow-md'>
         <Board
           grid={grid}
@@ -64,7 +65,7 @@ function Game() {
           onClick={(i, j) => handleClick(i, j)}
         />
         <div className="game-info">
-          {statusText}
+          
         </div>
       </div>
     </div>
