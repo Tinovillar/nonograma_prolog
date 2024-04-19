@@ -19,7 +19,9 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
                         <Clue clue={clue} key={i} isColumn={false} />
                     )}
                 </div>
-                <div className={`grid grid-cols-${numOfCols} grid-rows-${numOfRows}`}>
+                <div className="grid" style={
+                    {gridTemplateColumns: `repeat(${numOfCols}, minmax(0, 1fr))`}
+                }>
                     {grid.map((row, i) =>
                         row.map((cell, j) =>
                             <Square
