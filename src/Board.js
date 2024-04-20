@@ -10,13 +10,13 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
             <div className={`flex justify-around`}>
                 <div className='w-20 h-20 m-1'>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
-                    <Clue clue={clue} key={i} isColumn={true} />
+                    <Clue clue={clue} key={i} isColumn={true} done={colSat.includes(i)}/>
                 )}
             </div>
             <div className="flex">
                 <div className={`flex flex-col justify-between`}>
                     {rowsClues.map((clue, i) =>
-                        <Clue clue={clue} key={i} isColumn={false} />
+                        <Clue clue={clue} key={i} isColumn={false} done={rowSat.includes(i)}/>
                     )}
                 </div>
                 <div className="grid" style={{
