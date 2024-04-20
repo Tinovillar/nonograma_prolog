@@ -13,8 +13,8 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [painting, setPainting] = useState(true);
-  const [rowSat, setRowSat] = useState(false);
-  const [colSat, setColSat] = useState(false);
+  const [rowSat, setRowSat] = useState([]);
+  const [colSat, setColSat] = useState([]);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -50,8 +50,16 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
-        setRowSat(response['RowSat']);
-        setColSat(response['ColSat']);
+        if(response['RowSat']) {
+          setRowSat([...rowSat, i]);
+        } else {
+          setRowSat(rowSat.filter(e => e !== i));
+        }
+        if(response['ColSat']) {
+          setColSat([...colSat, j]);
+        } else {
+          setColSat(colSat.filter(e => e !== j));
+        }
       }
       setWaiting(false);
     });
@@ -69,6 +77,8 @@ function Game() {
           rowsClues={rowsClues}
           colsClues={colsClues}
           onClick={(i, j) => handleClick(i, j)}
+          rowSat={rowSat}
+          colSat={colSat}
         />
       </div>
       <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
