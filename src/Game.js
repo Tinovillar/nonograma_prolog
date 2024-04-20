@@ -13,6 +13,8 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [painting, setPainting] = useState(true);
+  const [rowSat, setRowSat] = useState(false);
+  const [colSat, setColSat] = useState(false);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -48,6 +50,8 @@ function Game() {
     pengine.query(queryS, (success, response) => {
       if (success) {
         setGrid(response['ResGrid']);
+        setRowSat(response['RowSat']);
+        setColSat(response['ColSat']);
       }
       setWaiting(false);
     });

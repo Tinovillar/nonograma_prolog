@@ -2,7 +2,7 @@ import React from 'react';
 import Square from './Square';
 import Clue from './Clue';
 
-function Board({ grid, rowsClues, colsClues, onClick }) {
+function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     return (
@@ -19,9 +19,11 @@ function Board({ grid, rowsClues, colsClues, onClick }) {
                         <Clue clue={clue} key={i} isColumn={false} />
                     )}
                 </div>
-                <div className="grid" style={
-                    {gridTemplateColumns: `repeat(${numOfCols}, minmax(0, 1fr))`}
-                }>
+                <div className="grid" style={{
+                        gridTemplateColumns: `repeat(${numOfCols}, minmax(0, 1fr))`,
+                        gridTemplateRows: `repeat(${numOfRows}, minmax(0,1fr))`
+                    }}
+                >
                     {grid.map((row, i) =>
                         row.map((cell, j) =>
                             <Square
