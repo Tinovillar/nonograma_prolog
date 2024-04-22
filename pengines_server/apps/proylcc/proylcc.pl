@@ -30,17 +30,17 @@ check_clue([], _, true):-!.
 check_clue([0|Cs], [L|Ls], Valid):-
     L == "X",
     check_clue(Cs, Ls, Valid),!.
-check_clue(_, [L|_], false):-
-    L == "X",
+check_clue([C|_], [L|[Ls|_]], false):-
+    L == "#",
+    C > 0,
+    Caux is C - 1,
+    (Ls \== "#", Caux \= 0),
     !.
 check_clue([C|Cs], [L|Ls], Valid):-
     L == "#",
     C > 0,
     Caux is C - 1,
     check_clue([Caux|Cs], Ls, Valid),
-    !.
-check_clue([C|_Cs], _, false):-
-    C \= 0,
     !.
 check_clue([0|_],[L|_Ls], false):-
     L == "#",
