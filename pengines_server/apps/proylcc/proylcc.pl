@@ -5,7 +5,6 @@
 
 :-use_module(library(lists)).
 
-search_clues(_, [], false).
 search_clues([],[],true).
 search_clues(Clues, [L|Ls], Valid):-
     L == "X",
@@ -18,14 +17,15 @@ search_clues(Clues, [L|Ls], Valid):-
 search_clues(Clues, [_|Ls], Valid):-
     search_clues(Clues, Ls, Valid),
     !.
+search_clues(_, [], false).
 
 check_clue([0],[], true):-!.
 check_clue([C|_Cs], [], false):-
     C > 0,
     !.
-check_clue([0], _, true):-!.
-check_clue([0],["#"|_Ls], false):-!.
-check_clue([],["#"|_Ls], false):-!.
+check_clue([],[L|_Ls], false):-
+    L == "#",
+    !.
 check_clue([], _, true):-!.
 check_clue([0|Cs], [L|Ls], Valid):-
     L == "X",
@@ -38,6 +38,18 @@ check_clue([C|Cs], [L|Ls], Valid):-
     C > 0,
     Caux is C - 1,
     check_clue([Caux|Cs], Ls, Valid),
+    !.
+check_clue([C|_Cs], _, false):-
+    C \= 0,
+    !.
+check_clue([0|_],[L|_Ls], false):-
+    L == "#",
+    !.
+check_clue([0|Cs], [_|Ls], Valid):-
+    check_clue(Cs, Ls, Valid),
+    !.
+check_clue(Clues, [_|Ls], Valid):-
+    check_clue(Clues, Ls, Valid),
     !.
 check_clue(_, [_|_], false).
 
@@ -56,15 +68,6 @@ clue(Cursor, [_C_head|C_tail], Return):-
     Cursor > 0,
     CursorAux is Cursor - 1,
     clue(CursorAux, C_tail, Return).
-
-clone([],[]).
-clone([X|Xs], [X|Ys]):-
-    clone(Xs, Ys).
-
-clone_grid([], []).
-clone_grid([X|Xs], [Y|Ys]):-
-    clone(X, Y),
-    clone_grid(Xs, Ys).
 %
 replace(X, 0, Y, [X|Xs], [Y|Xs]).
 %
@@ -81,8 +84,8 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
     Cell == Content
         ;
     replace(_Cell, ColN, Content, Row, NewRow)),
-	clone_grid(NewGrid, ClonedGrid),
-    clone(NewRow, ClonedRow),
+	copy_term(NewGrid, ClonedGrid),
+    copy_term(NewRow, ClonedRow),
     clue(RowN, RowsClues, RowClue),
     clue(ColN, ColsClues, ColClue),
     col_to_row(ColN, ClonedGrid, Column),
