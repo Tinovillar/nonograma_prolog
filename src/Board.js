@@ -8,7 +8,7 @@ function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
     return (
         <div className="flex-column">
             <div className={`flex justify-around`}>
-                <div className='w-20 h-20 m-1'>{/* top-left corner square */}</div>
+                <div className='w-12 h-12 m-11'>{/* top-left corner square */}</div>
                 {colsClues.map((clue, i) =>
                     <Clue clue={clue} key={i} isColumn={true} done={colSat.includes(i)}/>
                 )}
