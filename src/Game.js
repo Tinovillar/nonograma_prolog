@@ -70,12 +70,12 @@ function Game() {
   }
   
   return (
-    <div className="flex justify-center mt-10 items-center h-min justify-evenly">
+    <div className="flex items-center h-screen justify-evenly">
       <div className='flex flex-col justify-center items-center'>
         <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
         <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
       </div>
-      <div className='p-4 flex rounded-md shadow-2xl border-2'>
+      <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
         <Board
           grid={grid}
           rowsClues={rowsClues}
