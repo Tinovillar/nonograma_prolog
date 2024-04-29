@@ -35,6 +35,27 @@ function Game() {
     });
   }
 
+  function handleInitialChecks() {
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
+    const rowsCluesS = JSON.stringify(rowsClues);
+    const colsCluesS = JSON.stringify(colsClues);
+    const queryS = `initial_check(${rowsCluesS}, ${colsCluesS}, ${squaresS}, RowsCluesChecked, ColsCluesChecked)`;
+    pengine.query(queryS, (success, response) => {
+      if (success) {
+        for (let index = 0; index < colsClues.length; index++) {
+          if(response['ColsCluesChecked'][index]) {
+            setColSat([...colSat, index]);
+          }
+        }
+        for (let index = 0; index < rowsClues.length; index++) {
+          if(response['RowsCluesChecked'][index]) {
+            setRowSat([...rowSat, index]);
+          }
+        }
+      }
+    })
+  }
+
   function handleClick(i, j) {
     // No action on click if we are waiting.
     if (waiting) {
@@ -81,6 +102,7 @@ function Game() {
           rowsClues={rowsClues}
           colsClues={colsClues}
           onClick={(i, j) => handleClick(i, j)}
+          onLoad={() => handleInitialChecks()}
           rowSat={rowSat}
           colSat={colSat}
         />
