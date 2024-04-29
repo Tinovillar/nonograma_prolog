@@ -4,6 +4,7 @@
 	]).
 
 :-use_module(library(lists)).
+:- use_module(library(clpfd)).
 
 search_clues([],[],true).
 search_clues(Clues, [L|Ls], Valid):-
@@ -91,3 +92,14 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
     col_to_row(ColN, ClonedGrid, Column),
     search_clues(RowClue, ClonedRow, RowSat),
     search_clues(ColClue, Column, ColSat).
+
+initial_check_rows([],[],[]).
+initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
+    search_clues(Clue, Row, RowSat),
+	initial_check_rows(Clues, Rows, Sat).
+initial_check_cols(ColsClues, Grid, ColsCluesChecked):-
+    transpose(Grid, Ts),
+	initial_check_rows(ColsClues, Ts, ColsCluesChecked).
+initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked):-
+    initial_check_rows(RowsClues, Grid, RowsCluesChecked),
+    initial_check_cols(ColsClues, Grid, ColsCluesChecked).
