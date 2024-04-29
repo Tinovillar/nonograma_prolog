@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Square from './Square';
 import Clue from './Clue';
 
-function Board({ grid, rowsClues, colsClues, onClick, rowSat, colSat}) {
+function Board({ grid, rowsClues, colsClues, onClick, onLoad, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
+
+    useEffect(() => {
+        onLoad();
+    },[]);
+
     return (
         <div className="grid grid-rows-4 grid-cols-4 items-center align-center justify-items-center w-full">
-            <div className={`flex justify-around col-start-2 col-span-4 w-full h-full`}>
+            <div className={`flex col-start-2 col-span-4 w-full h-full`}>
                 {colsClues.map((clue, i) =>
                     <Clue clue={clue} key={i} isColumn={true} done={colSat.includes(i)}/>
                 )}
             </div>
-            <div className={`flex flex-col justify-between row-start-2 row-span-4 w-full h-full`}>
+            <div className={`flex flex-col row-start-2 row-span-4 w-full h-full`}>
                 {rowsClues.map((clue, i) =>
                     <Clue clue={clue} key={i} isColumn={false} done={rowSat.includes(i)}/>
                 )}
