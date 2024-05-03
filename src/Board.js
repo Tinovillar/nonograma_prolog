@@ -10,6 +10,10 @@ function Board({ grid, rowsClues, colsClues, onClick, onLoad, onVictory, rowSat,
         onLoad(); 
     },[]);
 
+    useEffect(() => {
+        onVictory();
+    }, [grid])
+
     return (
         <div className="grid grid-rows-4 grid-cols-4 items-center align-center justify-items-center w-full">
             <div className={`flex col-start-2 col-span-4 w-full h-full`}>
