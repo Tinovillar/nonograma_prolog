@@ -2,25 +2,9 @@ import React, { useEffect } from 'react';
 import Square from './Square';
 import Clue from './Clue';
 
-function Board({ grid, rowsClues, colsClues, onClick, onLoad, rowSat, colSat}) {
+function Board({ grid, rowsClues, colsClues, onClick, onLoad, onVictory, rowSat, colSat}) {
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
-
-    function nivelCompletado(rowSat, colSat, rowsClues, colsClues) {
-        return (
-          rowSat.length === rowsClues.length &&
-          colSat.length === colsClues.length 
-        );
-    }
-    
-    const estaResuelto = nivelCompletado(rowSat, colSat, rowsClues, colsClues);
-    useEffect(() => {
-     if (estaResuelto) {
-        setTimeout(() => {
-            alert("Nivel completado!");
-          }, 10);
-     }
-    }, [estaResuelto]);
 
     useEffect(() => {
         onLoad(); 
