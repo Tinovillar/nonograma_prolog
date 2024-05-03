@@ -103,3 +103,27 @@ initial_check_cols(ColsClues, Grid, ColsCluesChecked):-
 initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked):-
     initial_check_rows(RowsClues, Grid, RowsCluesChecked),
     initial_check_cols(ColsClues, Grid, ColsCluesChecked).
+
+victory_check_rows([],[],[]).
+victory_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
+    search_clues(Clue, Row, RowSat),
+	victory_check_rows(Clues, Rows, Sat).
+victory_check_cols(ColsClues, Grid, ColsCluesChecked):-
+    transpose(Grid, Ts),
+	victory_check_rows(ColsClues, Ts, ColsCluesChecked).
+victory_check(RowsClues, ColsClues, Grid):-
+    victory_check_rows(RowsClues, Grid, RowsCluesChecked),
+    victory_check_cols(ColsClues, Grid, ColsCluesChecked),
+    is_valid(RowsCluesChecked, ColsCluesChecked).
+
+is_valid([],[]).
+is_valid([],[ClueC|CluesC]):-
+    ClueC == true,
+    is_valid(CluesC, []).
+is_valid([ClueR|CluesR],[]):-
+    ClueR == true,
+    is_valid(CluesR, []).
+is_valid([ClueR|CluesR], [ClueC|CluesC]):-
+    ClueR == true,
+    ClueC == true,
+    is_valid(CluesR, CluesC).
