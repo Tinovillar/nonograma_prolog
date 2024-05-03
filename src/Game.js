@@ -15,6 +15,7 @@ function Game() {
   const [painting, setPainting] = useState(true);
   const [rowSat, setRowSat] = useState([]);
   const [colSat, setColSat] = useState([]);
+  const [victory, setVictory] = useState(false);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -56,9 +57,22 @@ function Game() {
     })
   }
 
+  function handleVictory() {
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
+    const rowsCluesS = JSON.stringify(rowsClues);
+    const colsCluesS = JSON.stringify(colsClues);
+    const queryS = `victory_check(${rowsCluesS}, ${colsCluesS}, ${squaresS})`;
+    pengine.query(queryS, (success, response) => {
+      if (success) {
+        console.log(response);
+        setVictory(true);
+      }
+    })
+  }
+
   function handleClick(i, j) {
     // No action on click if we are waiting.
-    if (waiting) {
+    if (waiting || victory) {
       return;
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
@@ -89,25 +103,38 @@ function Game() {
   if (!grid) {
     return null;
   }
+
+  const updatePage = () => {
+    window.location.reload();
+  };
   
   return (
-    <div className="flex items-center h-screen justify-evenly">
-      <div className='flex flex-col justify-center items-center'>
-        <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
-        <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
+    <>
+      <div className={`${!victory ? 'hidden' : ''} fixed w-2/5 h-2/5 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-md`}>
+        <div className='w-full h-full flex flex-col justify-evenly bg-yellow-300 font-mono rounded-xl'>
+          <h1 className='text-8xl text-center'>Ganaste!</h1>
+          <button type="button" className='bg-white w-1/3 ml-auto mr-auto text-xl animate-bounce rounded-md p-2' onClick={updatePage}>Intentar de nuevo</button>
+        </div>
       </div>
-      <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
-        <Board
-          grid={grid}
-          rowsClues={rowsClues}
-          colsClues={colsClues}
-          onClick={(i, j) => handleClick(i, j)}
-          onLoad={() => handleInitialChecks()}
-          rowSat={rowSat}
-          colSat={colSat}
-        />
+      <div className="flex items-center h-screen justify-evenly">
+        <div className='flex flex-col justify-center items-center'>
+          <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
+          <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
+        </div>
+        <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
+          <Board
+            grid={grid}
+            rowsClues={rowsClues}
+            colsClues={colsClues}
+            onClick={(i, j) => handleClick(i, j)}
+            onLoad={() => handleInitialChecks()}
+            onVictory={() => handleVictory()}
+            rowSat={rowSat}
+            colSat={colSat}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
