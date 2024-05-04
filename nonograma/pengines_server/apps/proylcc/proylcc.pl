@@ -7,6 +7,7 @@
 :- use_module(library(clpfd)).
 
 search_clues([],[],true).
+search_clues([0],[],true).
 search_clues(Clues, [L|Ls], Valid):-
     L == "X",
     search_clues(Clues, Ls, Valid),
