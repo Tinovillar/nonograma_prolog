@@ -14,6 +14,8 @@ function Game() {
   const [colsClues, setColsClues] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [painting, setPainting] = useState(true);
+  const [showSquareState, setShowSquareState] = useState(false);
+  const [mode, setMode] = useState(true);
   const [rowSat, setRowSat] = useState([]);
   const [colSat, setColSat] = useState([]);
   const [victory, setVictory] = useState(false);
@@ -56,6 +58,7 @@ function Game() {
         }
       }
     })
+    solve();
   }
 
   function handleVictory() {
@@ -72,24 +75,19 @@ function Game() {
 
   function solve() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
-    const rowsCluesS = JSON.stringify(rowsClues);
-    const colsCluesS = JSON.stringify(colsClues);
-    const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked)`;
-    pengine.query(queryS, (success, response) => {
-      if (success && !victory) {
-        setSolvedGrid(response['Solved']);
-      }
-    })
+      const rowsCluesS = JSON.stringify(rowsClues);
+      const colsCluesS = JSON.stringify(colsClues);
+      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked)`;
+      pengine.query(queryS, (success, response) => {
+        if (success && !victory) {
+          setSolvedGrid(response['Solved']);
+        }
+      })
   }
 
-  function handleClick(i, j) {
-    // No action on click if we are waiting.
-    if (waiting || victory) {
-      return;
-    }
-    // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
+  function handleClickQuery(i, j) {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = painting ? '#' : 'X'; // Content to put in the clicked square.
+    const content = mode ? '#' : 'X'; // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -112,6 +110,34 @@ function Game() {
     });
   }
 
+  function handleClick(i, j) {
+    // No action on click if we are waiting.
+    if (waiting || victory) {
+      return;
+    }
+    // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
+    if(!showSquareState)
+      handleClickQuery(i,j);
+    else
+      handleSquareState(i,j);
+  }
+
+  function handleSquareState(i,j) {
+    const lastMode = mode;
+    console.log(mode);
+    if (solvedGrid[i][j] === '#') {
+      setMode(true);
+      console.log(mode);
+      handleClickQuery(i,j);
+    } else {
+      setMode(false);
+      console.log(mode);
+      handleClickQuery(i,j);
+    }
+    setMode(lastMode);
+    setShowSquareState(!showSquareState);
+  }
+
   if (!grid) {
     return null;
   }
@@ -131,7 +157,9 @@ function Game() {
       <div className="flex items-center h-screen justify-evenly">
         <div className='flex flex-col justify-center items-center'>
           <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
-          <SwitchBtn painting={painting} onClick={() => setPainting(!painting)}/>
+          <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
+          <button type='button' onClick={() => setShowSquareState(!showSquareState)}>Mostrar Celda</button>
+          <button type='button' onClick={() => setPainting(!painting)}>Mostrar Solucion</button>
         </div>
         <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
           <Board
@@ -143,6 +171,8 @@ function Game() {
             onVictory={() => handleVictory()}
             rowSat={rowSat}
             colSat={colSat}
+            solvedGrid={solvedGrid}
+            painting={painting}
           />
         </div>
       </div>
