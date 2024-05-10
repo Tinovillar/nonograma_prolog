@@ -70,22 +70,16 @@ function Game() {
     })
   }
 
-  async function solve() {
-    return new Promise((resolve, reject) => {
-      const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
-      const rowsCluesS = JSON.stringify(rowsClues);
-      const colsCluesS = JSON.stringify(colsClues);
-      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked)`;
-      
-      pengine.query(queryS, (success, response) => {
-        if (success && !victory) {
-          setSolvedGrid(response['Solved']);
-          resolve(); // Resuelve la promesa cuando se establece solvedGrid
-        } else {
-          reject(new Error('Failed to solve puzzle')); // Rechaza la promesa si hay un error o no se ha logrado la victoria
-        }
-      });
-    });
+  function solve() {
+    const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
+    const rowsCluesS = JSON.stringify(rowsClues);
+    const colsCluesS = JSON.stringify(colsClues);
+    const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked)`;
+    pengine.query(queryS, (success, response) => {
+      if (success && !victory) {
+        setSolvedGrid(response['Solved']);
+      }
+    })
   }
 
   function handleClick(i, j) {
