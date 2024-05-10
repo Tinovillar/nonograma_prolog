@@ -85,9 +85,8 @@ function Game() {
       })
   }
 
-  function handleClickQuery(i, j) {
+  function handleClickQuery(i, j, content) {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
-    const content = mode ? '#' : 'X'; // Content to put in the clicked square.
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
     const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
@@ -116,25 +115,19 @@ function Game() {
       return;
     }
     // Build Prolog query to make a move and get the new satisfacion status of the relevant clues.    
+    let content = mode ? '#' : 'X';
     if(!showSquareState)
-      handleClickQuery(i,j);
+      handleClickQuery(i,j, content);
     else
       handleSquareState(i,j);
   }
 
   function handleSquareState(i,j) {
-    const lastMode = mode;
-    console.log(mode);
     if (solvedGrid[i][j] === '#') {
-      setMode(true);
-      console.log(mode);
-      handleClickQuery(i,j);
+      handleClickQuery(i,j,'#');
     } else {
-      setMode(false);
-      console.log(mode);
-      handleClickQuery(i,j);
+      handleClickQuery(i,j,'X');
     }
-    setMode(lastMode);
     setShowSquareState(!showSquareState);
   }
 
@@ -157,9 +150,11 @@ function Game() {
       <div className="flex items-center h-screen justify-evenly">
         <div className='flex flex-col justify-center items-center'>
           <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
-          <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
-          <button type='button' onClick={() => setShowSquareState(!showSquareState)}>Mostrar Celda</button>
-          <button type='button' onClick={() => setPainting(!painting)}>Mostrar Solucion</button>
+          <div className='flex w-full justify-between'>
+            <button type='button' onClick={() => setShowSquareState(!showSquareState)}>Reveal</button>
+            <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
+            <button type='button' onClick={() => setPainting(!painting)}>Solve</button>
+          </div>
         </div>
         <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
           <Board
