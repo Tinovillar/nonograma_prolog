@@ -128,3 +128,33 @@ is_valid([ClueR|CluesR], [ClueC|CluesC]):-
     ClueR == true,
     ClueC == true,
     is_valid(CluesR, CluesC).
+
+combinations(0, 0, []).
+combinations(C, I, ["#"|T2]):-
+    I =\= 0,
+    Idx is I - 1,
+    Cs is C-1,
+    combinations(Cs, Idx, T2).
+combinations(C, I, [_|T2]):-
+    I =\= 0,
+    Idx is I - 1,
+    combinations(C, Idx, T2).
+
+combinations_grid([], [], []).
+combinations_grid([Clue|Clues], [Row|Grid], [RowOut|GridOut]):-
+    total_clue(Clue, TotalClue),
+    length(Row, Length),
+    combinations(TotalClue, Length, RowOut),
+    search_clues(Clue, RowOut, Valid),
+    Valid == true,
+    combinations_grid(Clues, Grid, GridOut).
+
+total_clue([], 0).
+total_clue([C|Clue], Total):-
+    total_clue(Clue, Sum),
+    Total is C + Sum.
+
+solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked):-
+    combinations_grid(RowsClues, Grid, GridOut),
+    victory_check(RowsClues, ColsClues, GridOut),
+    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked).
