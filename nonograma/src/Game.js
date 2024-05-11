@@ -151,9 +151,17 @@ function Game() {
         <div className='flex flex-col justify-center items-center'>
           <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
           <div className='flex w-full justify-between'>
-            <button type='button' onClick={() => setShowSquareState(!showSquareState)}>Reveal</button>
-            <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
-            <button type='button' onClick={() => setPainting(!painting)}>Solve</button>
+            <div className='flex flex-col'>
+                <button type='button' className='text-4xl font-mono pb-2' onClick={() => setShowSquareState(!showSquareState)}>Reveal</button>
+                <i class="fa-solid fa-lightbulb fa-2x"></i>
+            </div>
+            <div>
+                <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
+            </div>
+            <div className='flex flex-col'>
+                <button type='button' className='text-4xl font-mono pb-2' onClick={() => setPainting(!painting)}>Solve</button>
+                <i class="fa-solid fa-circle-check fa-2x"></i>
+            </div>
           </div>
         </div>
         <div className='p-4 flex rounded-md shadow-2xl border-2 square w-5/12'>
