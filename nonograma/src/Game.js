@@ -123,9 +123,9 @@ function Game() {
   }
 
   function handleSquareState(i,j) {
-    if (solvedGrid[i][j] === '#') {
+    if (solvedGrid[i][j] === '#' && grid[i][j] !== '#') {
       handleClickQuery(i,j,'#');
-    } else {
+    } else if (solvedGrid[i][j] !== '#' && grid[i][j] !== 'X'){
       handleClickQuery(i,j,'X');
     }
     setShowSquareState(!showSquareState);
@@ -152,15 +152,15 @@ function Game() {
           <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
           <div className='flex w-full justify-between'>
             <div className='flex flex-col'>
-                <button type='button' className='text-4xl font-mono pb-2' onClick={() => setShowSquareState(!showSquareState)}>Reveal</button>
-                <i class="fa-solid fa-lightbulb fa-2x"></i>
+                <h3 className={`${showSquareState ? 'animate-bounce' : ''} text-4xl font-mono pb-2`}>Reveal</h3>
+                <button type='button' onClick={() => setShowSquareState(!showSquareState)}><i class="fa-solid fa-lightbulb fa-2x"></i></button>
             </div>
             <div>
                 <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
             </div>
             <div className='flex flex-col'>
-                <button type='button' className='text-4xl font-mono pb-2' onClick={() => setPainting(!painting)}>Solve</button>
-                <i class="fa-solid fa-circle-check fa-2x"></i>
+                <h3 className={`${!painting ? 'animate-bounce' : ''} text-4xl font-mono pb-2`}>Solve</h3>
+                <button type='button' onClick={() => setPainting(!painting)}><i class="fa-solid fa-circle-check fa-2x"></i></button>
             </div>
           </div>
         </div>
