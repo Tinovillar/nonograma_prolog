@@ -151,16 +151,16 @@ function Game() {
         <div className='flex flex-col justify-center items-center'>
           <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
           <div className='flex w-full justify-between'>
-            <div className='flex flex-col'>
-                <h3 className={`${showSquareState ? 'animate-bounce' : ''} text-4xl font-mono pb-2`}>Reveal</h3>
-                <button type='button' onClick={() => setShowSquareState(!showSquareState)}><i class="fa-solid fa-lightbulb fa-2x"></i></button>
+            <div onClick={() => setShowSquareState(!showSquareState)} className='flex flex-col cursor-pointer rounded-3xl shadow-xl border-2 mr-10'>
+                <h3 className={`${showSquareState ? 'animate-bounce' : ''} text-4xl font-mono p-4`}>Reveal</h3>
+                <button type='button'><i class="fa-solid fa-lightbulb fa-2x pb-4"></i></button>
             </div>
-            <div>
+            <div className='flex flex-col mt-6'>
                 <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
             </div>
-            <div className='flex flex-col'>
-                <h3 className={`${!painting ? 'animate-bounce' : ''} text-4xl font-mono pb-2`}>Solve</h3>
-                <button type='button' onClick={() => setPainting(!painting)}><i class="fa-solid fa-circle-check fa-2x"></i></button>
+            <div onClick={() => setPainting(!painting)} className='flex flex-col cursor-pointer rounded-3xl shadow-xl border-2 ml-10'>
+                <h3 className={`${!painting ? 'animate-bounce' : ''} text-4xl font-mono p-4`}>Solve</h3>
+                <button type='button' ><i class="fa-solid fa-circle-check fa-2x pb-4"></i></button>
             </div>
           </div>
         </div>
