@@ -6,6 +6,7 @@ function Board({ grid, rowsClues, colsClues, onClick, onLoad, onVictory, rowSat,
     const numOfRows = grid.length;
     const numOfCols = grid[0].length;
     let board = painting ? grid : solvedGrid;
+    
     useEffect(() => {
         onLoad(); 
     },[]);

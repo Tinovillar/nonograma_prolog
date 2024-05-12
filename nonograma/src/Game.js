@@ -19,6 +19,8 @@ function Game() {
   const [rowSat, setRowSat] = useState([]);
   const [colSat, setColSat] = useState([]);
   const [victory, setVictory] = useState(false);
+  const [cant, setCant] = useState(0);
+  const [cantAll, setCantAll] = useState(0);
 
   useEffect(() => {
     // Creation of the pengine server instance.    
@@ -43,7 +45,7 @@ function Game() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-    const queryS = `initial_check(${rowsCluesS}, ${colsCluesS}, ${squaresS}, RowsCluesChecked, ColsCluesChecked)`;
+    const queryS = `initial_check(${rowsCluesS}, ${colsCluesS}, ${squaresS}, RowsCluesChecked, ColsCluesChecked, Cantidad)`;
     pengine.query(queryS, (success, response) => {
       if (success) {
         for (let index = 0; index < colsClues.length; index++) {
@@ -56,6 +58,7 @@ function Game() {
             setRowSat([...rowSat, index]);
           }
         }
+        setCant(response['Cantidad']);
       }
     })
     solve();
@@ -77,10 +80,11 @@ function Game() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
       const rowsCluesS = JSON.stringify(rowsClues);
       const colsCluesS = JSON.stringify(colsClues);
-      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked)`;
+      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked, CantidadCorrecta)`;
       pengine.query(queryS, (success, response) => {
         if (success && !victory) {
           setSolvedGrid(response['Solved']);
+          setCantAll(response['CantidadCorrecta']);
         }
       })
   }
@@ -89,7 +93,7 @@ function Game() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_'); // Remove quotes for variables. squares = [["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]]
     const rowsCluesS = JSON.stringify(rowsClues);
     const colsCluesS = JSON.stringify(colsClues);
-    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
+    const queryS = `put("${content}", [${i},${j}], ${rowsCluesS}, ${colsCluesS}, ${squaresS}, ResGrid, RowSat, ColSat, Cantidad)`; // queryS = put("#",[0,1],[], [],[["X",_,_,_,_],["X",_,"X",_,_],["X",_,_,_,_],["#","#","#",_,_],[_,_,"#","#","#"]], GrillaRes, FilaSat, ColSat)
     setWaiting(true);
     pengine.query(queryS, (success, response) => {
       if (success) {
@@ -104,6 +108,7 @@ function Game() {
         } else {
           setColSat(colSat.filter(e => e !== j));
         }
+        setCant(response['Cantidad']);
       }
       setWaiting(false);
     });
@@ -149,7 +154,11 @@ function Game() {
       </div>
       <div className="flex items-center h-screen justify-evenly">
         <div className='flex flex-col justify-center items-center'>
-          <h1 className='text-8xl pb-40 font-mono'>NONOGRAM.</h1>
+            <h1 className='text-8xl pb-20 font-mono'>NONOGRAM.</h1>
+            <div className='flex flex-row items-center justify-evenly'>
+              <h3 className='text-4xl pb-20 font-mono'>{cant}/{cantAll}</h3>
+              <i class="fa-solid fa-square-check -mt-20 ml-3 fa-2x"></i>
+            </div>
           <div className='flex w-full justify-between'>
             <div onClick={() => setShowSquareState(!showSquareState)} className='flex flex-col cursor-pointer rounded-3xl shadow-xl border-2 mr-10'>
                 <h3 className={`${showSquareState ? 'animate-bounce' : ''} text-4xl font-mono p-4`}>Reveal</h3>

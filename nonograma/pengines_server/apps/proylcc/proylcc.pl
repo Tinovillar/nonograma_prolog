@@ -1,6 +1,6 @@
 :- module(proylcc,
 	[  
-		put/8
+		put/9
 	]).
 
 :-use_module(library(lists)).
@@ -80,7 +80,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
-put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):-
+put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat, Cantidad):-
     replace(Row, RowN, NewRow, Grid, NewGrid),
     (replace(Cell, ColN, _, Row, NewRow),
     Cell == Content
@@ -92,7 +92,8 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat):
     clue(ColN, ColsClues, ColClue),
     col_to_row(ColN, ClonedGrid, Column),
     search_clues(RowClue, ClonedRow, RowSat),
-    search_clues(ColClue, Column, ColSat).
+    search_clues(ColClue, Column, ColSat),
+    contar_en_grilla(Grid, Cantidad).
 
 initial_check_rows([],[],[]).
 initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
@@ -101,9 +102,10 @@ initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
 initial_check_cols(ColsClues, Grid, ColsCluesChecked):-
     transpose(Grid, Ts),
 	initial_check_rows(ColsClues, Ts, ColsCluesChecked).
-initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked):-
+initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, Cantidad):-
     initial_check_rows(RowsClues, Grid, RowsCluesChecked),
-    initial_check_cols(ColsClues, Grid, ColsCluesChecked).
+    initial_check_cols(ColsClues, Grid, ColsCluesChecked),
+    contar_en_grilla(Grid, Cantidad).
 
 victory_check_rows([],[],[]).
 victory_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
@@ -154,7 +156,24 @@ total_clue([C|Clue], Total):-
     total_clue(Clue, Sum),
     Total is C + Sum.
 
-solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked):-
+solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked, Cantidad):-
     combinations_grid(RowsClues, Grid, GridOut),
     victory_check(RowsClues, ColsClues, GridOut),
-    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked).
+    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked, _),
+    contar_en_grilla(GridOut, Cantidad).
+
+% Predicado para contar los "#" en una lista de listas
+contar_elemento([], 0).
+contar_elemento([X|Resto], Cantidad) :-
+    (X == "#" ->
+        contar_elemento(Resto, CantidadResto),
+        Cantidad is CantidadResto + 1
+    ;
+        contar_elemento(Resto, Cantidad)
+    ).
+
+contar_en_grilla([], 0).
+contar_en_grilla([Fila|Resto], CantidadTotal) :-
+    contar_elemento(Fila, CantidadFila),
+    contar_en_grilla(Resto, CantidadResto),
+    CantidadTotal is CantidadFila + CantidadResto.
