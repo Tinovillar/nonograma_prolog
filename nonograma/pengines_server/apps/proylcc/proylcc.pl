@@ -8,52 +8,24 @@
 
 search_clues([],[],true).
 search_clues([0],[],true).
-search_clues(Clues, [L|Ls], Valid):-
-    L == "X",
-    search_clues(Clues, Ls, Valid),
-    !.
+search_clues(_,[],false).
 search_clues(Clues, [L|Ls], Valid):-
     L == "#",
-    check_clue(Clues, ["#"|Ls], Valid),
-    !.
+    check_clue(Clues, [L|Ls], Valid),!.
 search_clues(Clues, [_|Ls], Valid):-
-    search_clues(Clues, Ls, Valid),
-    !.
-search_clues(_, [], false).
+    search_clues(Clues, Ls, Valid),!.
 
-check_clue([0],[], true):-!.
-check_clue([C|_Cs], [], false):-
-    C > 0,
-    !.
-check_clue([],[L|_Ls], false):-
-    L == "#",
-    !.
-check_clue([], _, true):-!.
-check_clue([0|Cs], [L|Ls], Valid):-
-    L == "X",
-    check_clue(Cs, Ls, Valid),!.
-check_clue([C|_], [L|[Ls|_]], false):-
-    L == "#",
-    C > 0,
-    Caux is C - 1,
-    (Ls \== "#", Caux \= 0),
-    !.
+check_clue([0], [], true).
+check_clue([0|_Cs], [L|_Ls], false):-
+    L == "#",!.
+check_clue([0|Cs], [_L|Ls], Valid):-
+    search_clues(Cs, Ls, Valid),!.
 check_clue([C|Cs], [L|Ls], Valid):-
     L == "#",
     C > 0,
     Caux is C - 1,
-    check_clue([Caux|Cs], Ls, Valid),
-    !.
-check_clue([0|_],[L|_Ls], false):-
-    L == "#",
-    !.
-check_clue([0|Cs], [_|Ls], Valid):-
-    check_clue(Cs, Ls, Valid),
-    !.
-check_clue(Clues, [_|Ls], Valid):-
-    check_clue(Clues, Ls, Valid),
-    !.
-check_clue(_, [_|_], false).
+    check_clue([Caux|Cs], Ls, Valid),!.
+check_clue(_,_,false).
 
 search(0, [Element|_], Element).
 search(I, [_|Row], Element):-
@@ -86,14 +58,12 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat, 
     Cell == Content
         ;
     replace(_Cell, ColN, Content, Row, NewRow)),
-	copy_term(NewGrid, ClonedGrid),
-    copy_term(NewRow, ClonedRow),
     clue(RowN, RowsClues, RowClue),
     clue(ColN, ColsClues, ColClue),
-    col_to_row(ColN, ClonedGrid, Column),
-    search_clues(RowClue, ClonedRow, RowSat),
+    col_to_row(ColN, NewGrid, Column),
+    search_clues(RowClue, NewRow, RowSat),
     search_clues(ColClue, Column, ColSat),
-    contar_en_grilla(Grid, Cantidad).
+    contar_en_grilla(NewGrid, Cantidad).
 
 initial_check_rows([],[],[]).
 initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
@@ -107,60 +77,42 @@ initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, Ca
     initial_check_cols(ColsClues, Grid, ColsCluesChecked),
     contar_en_grilla(Grid, Cantidad).
 
-victory_check_rows([],[],[]).
-victory_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
-    search_clues(Clue, Row, RowSat),
-	victory_check_rows(Clues, Rows, Sat).
-victory_check_cols(ColsClues, Grid, ColsCluesChecked):-
-    transpose(Grid, Ts),
-	victory_check_rows(ColsClues, Ts, ColsCluesChecked).
 victory_check(RowsClues, ColsClues, Grid):-
-    victory_check_rows(RowsClues, Grid, RowsCluesChecked),
-    victory_check_cols(ColsClues, Grid, ColsCluesChecked),
+    initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, _),
     is_valid(RowsCluesChecked, ColsCluesChecked).
 
-is_valid([],[]).
-is_valid([],[ClueC|CluesC]):-
-    ClueC == true,
-    is_valid(CluesC, []).
-is_valid([ClueR|CluesR],[]):-
-    ClueR == true,
-    is_valid(CluesR, []).
-is_valid([ClueR|CluesR], [ClueC|CluesC]):-
-    ClueR == true,
-    ClueC == true,
-    is_valid(CluesR, CluesC).
+is_valid(RowsCluesChecked, ColsCluesChecked):-
+    all_true(RowsCluesChecked),
+    all_true(ColsCluesChecked).
 
-combinations(0, 0, []).
-combinations(C, I, ["#"|T2]):-
-    I =\= 0,
-    Idx is I - 1,
-    Cs is C-1,
-    combinations(Cs, Idx, T2).
-combinations(C, I, [_|T2]):-
-    I =\= 0,
-    Idx is I - 1,
-    combinations(C, Idx, T2).
+all_true([]).
+all_true([L|Ls]):-
+    L == true,
+    all_true(Ls).
+
+combinations([], [], []).
+combinations(Clues, Lin, Lout):-
+    consecutive(Clues, Lin, Lout).
+combinations(Clues, [_L|Ls], [_H|T]):-
+    combinations(Clues, Ls, T).
+
+consecutive([0], [], []).
+consecutive([0|Cs], [_L|Ls], [_|T]):-
+    combinations(Cs, Ls, T).
+consecutive([C|Cs], [_L|Ls], ["#"|T]):-
+    C > 0,
+    Caux is C-1,
+    consecutive([Caux|Cs], Ls, T).
 
 combinations_grid([], [], []).
 combinations_grid([Clue|Clues], [Row|Grid], [RowOut|GridOut]):-
-    total_clue(Clue, TotalClue),
-    length(Row, Length),
-    combinations(TotalClue, Length, RowOut),
-    search_clues(Clue, RowOut, Valid),
-    Valid == true,
+    combinations(Clue, Row, RowOut),
     combinations_grid(Clues, Grid, GridOut).
-
-total_clue([], 0).
-total_clue([C|Clue], Total):-
-    total_clue(Clue, Sum),
-    Total is C + Sum.
 
 solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked, Cantidad):-
     combinations_grid(RowsClues, Grid, GridOut),
-    victory_check(RowsClues, ColsClues, GridOut),
-    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked, _),
-    contar_en_grilla(GridOut, Cantidad).
+    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked, Cantidad),
+    is_valid(RowsCluesChecked, ColsCluesChecked).
 
 % Predicado para contar los "#" en una lista de listas
 contar_elemento([], 0).
