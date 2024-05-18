@@ -52,7 +52,7 @@ replace(X, XIndex, Y, [Xi|Xs], [Xi|XsY]):-
 %
 % put(+Content, +Pos, +RowsClues, +ColsClues, +Grid, -NewGrid, -RowSat, -ColSat).
 %
-put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat, Cantidad):-
+put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat, Cant):-
     replace(Row, RowN, NewRow, Grid, NewGrid),
     (replace(Cell, ColN, _, Row, NewRow),
     Cell == Content
@@ -63,7 +63,7 @@ put(Content, [RowN, ColN], RowsClues, ColsClues, Grid, NewGrid, RowSat, ColSat, 
     col_to_row(ColN, NewGrid, Column),
     search_clues(RowClue, NewRow, RowSat),
     search_clues(ColClue, Column, ColSat),
-    contar_en_grilla(NewGrid, Cantidad).
+    count_grid(NewGrid, Cant).
 
 initial_check_rows([],[],[]).
 initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
@@ -72,10 +72,10 @@ initial_check_rows([Clue|Clues], [Row|Rows], [RowSat|Sat]):-
 initial_check_cols(ColsClues, Grid, ColsCluesChecked):-
     transpose(Grid, Ts),
 	initial_check_rows(ColsClues, Ts, ColsCluesChecked).
-initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, Cantidad):-
+initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, Cant):-
     initial_check_rows(RowsClues, Grid, RowsCluesChecked),
     initial_check_cols(ColsClues, Grid, ColsCluesChecked),
-    contar_en_grilla(Grid, Cantidad).
+    count_grid(Grid, Cant).
 
 victory_check(RowsClues, ColsClues, Grid):-
     initial_check(RowsClues, ColsClues, Grid, RowsCluesChecked, ColsCluesChecked, _),
@@ -109,23 +109,22 @@ combinations_grid([Clue|Clues], [Row|Grid], [RowOut|GridOut]):-
     combinations(Clue, Row, RowOut),
     combinations_grid(Clues, Grid, GridOut).
 
-solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked, Cantidad):-
+solve(RowsClues, ColsClues, Grid, GridOut, RowsCluesChecked, ColsCluesChecked, Cant):-
     combinations_grid(RowsClues, Grid, GridOut),
-    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked, Cantidad),
+    initial_check(RowsClues, ColsClues, GridOut, RowsCluesChecked, ColsCluesChecked, Cant),
     is_valid(RowsCluesChecked, ColsCluesChecked).
 
-% Predicado para contar los "#" en una lista de listas
-contar_elemento([], 0).
-contar_elemento([X|Resto], Cantidad) :-
-    (X == "#" ->
-        contar_elemento(Resto, CantidadResto),
-        Cantidad is CantidadResto + 1
-    ;
-        contar_elemento(Resto, Cantidad)
-    ).
+count([], 0).
+count([X|Res], Cant) :-
+    X == "#",
+    count(Res, CantRes),
+    Cant is CantRes + 1.
+count([X|Res], Cant) :-
+    X \== "#",
+    count(Res, Cant).
 
-contar_en_grilla([], 0).
-contar_en_grilla([Fila|Resto], CantidadTotal) :-
-    contar_elemento(Fila, CantidadFila),
-    contar_en_grilla(Resto, CantidadResto),
-    CantidadTotal is CantidadFila + CantidadResto.
+count_grid([], 0).
+count_grid([Fila|Res], CantTotal) :-
+    count(Fila, CantFila),
+    count_grid(Res, CantRes),
+    CantTotal is CantFila + CantRes.
