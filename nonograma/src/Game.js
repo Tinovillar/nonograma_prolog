@@ -80,7 +80,7 @@ function Game() {
     const squaresS = JSON.stringify(grid).replaceAll('"_"', '_');
       const rowsCluesS = JSON.stringify(rowsClues);
       const colsCluesS = JSON.stringify(colsClues);
-      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, RowsCluesChecked, ColsCluesChecked, CantidadCorrecta)`;
+      const queryS = `solve(${rowsCluesS}, ${colsCluesS}, ${squaresS}, Solved, CantidadCorrecta)`;
       pengine.query(queryS, (success, response) => {
         if (success && !victory) {
           setSolvedGrid(response['Solved']);
@@ -157,19 +157,19 @@ function Game() {
             <h1 className='text-8xl pb-20 font-mono'>NONOGRAM.</h1>
             <div className='flex flex-row items-center justify-evenly'>
               <h3 className='text-4xl pb-20 font-mono'>{cant}/{cantAll}</h3>
-              <i class="fa-solid fa-square-check -mt-20 ml-3 fa-2x"></i>
+              <i className="fa-solid fa-square-check -mt-20 ml-3 fa-2x"></i>
             </div>
           <div className='flex w-full justify-between'>
-            <div onClick={() => setShowSquareState(!showSquareState)} className='flex flex-col cursor-pointer rounded-3xl shadow-xl border-2 mr-10'>
-                <h3 className={`${showSquareState ? 'animate-bounce' : ''} text-4xl font-mono p-4`}>Reveal</h3>
-                <button type='button'><i class="fa-solid fa-lightbulb fa-2x pb-4"></i></button>
+            <div onClick={() => setShowSquareState(!showSquareState)} className={`flex flex-col cursor-pointer rounded-3xl ${!showSquareState ? "shadow-xl" : "border-transparent bg-gray-200"} border-2 mr-10`}>
+                <h3 className={`text-4xl font-mono p-4`}>Reveal</h3>
+                <button type='button'><i className="fa-solid fa-lightbulb fa-2x pb-4"></i></button>
             </div>
             <div className='flex flex-col mt-6'>
                 <SwitchBtn mode={mode} onClick={() => setMode(!mode)}/>
             </div>
-            <div onClick={() => setPainting(!painting)} className='flex flex-col cursor-pointer rounded-3xl shadow-xl border-2 ml-10'>
-                <h3 className={`${!painting ? 'animate-bounce' : ''} text-4xl font-mono p-4`}>Solve</h3>
-                <button type='button' ><i class="fa-solid fa-circle-check fa-2x pb-4"></i></button>
+            <div onClick={() => setPainting(!painting)} className={`flex flex-col cursor-pointer rounded-3xl ${painting ? "shadow-xl" : "border-transparent bg-gray-200"} border-2 ml-10`}>
+                <h3 className={`text-4xl font-mono p-4`}>Solve</h3>
+                <button type='button' ><i className="fa-solid fa-circle-check fa-2x pb-4"></i></button>
             </div>
           </div>
         </div>
